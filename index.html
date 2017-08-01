@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>画时钟</title>
+
+	<style>
+		*{
+			box-sizing:border-box;
+			margin:0;padding:0;
+			
+		}
+		#clockDiv{
+			text-align:center;
+			margin-top:50px;
+		}
+		#clock{
+			/*border:1px solid red;*/
+		}
+	</style>
+</head>
+<body>
+	<div id="clockDiv">
+		<canvas width="200" height="200" id="clock"></canvas>
+	</div>
+	<br><br>
+	<h3 style="text-align:center" id="timetext"></h3>
+	
+	<script type="text/javascript">
+		var $d = document.getElementById('clock');
+		var $timetext=document.getElementById('timetext');
+		var circle=$d.getContext('2d');
+		var width=circle.canvas.width;
+		var height=circle.canvas.height;
+		var r=width/2;
+		var drawBg=function(){
+			circle.save();
+			circle.translate(r,r);
+			circle.beginPath();
+			circle.lineWidth=10;
+			circle.arc(0,0,r-5,0,2*Math.PI,false);
+			circle.stroke();
+			circle.font='18px Arial';
+			circle.textAlign='center';
+			circle.textBaseline="middle";
+
+			var namArr=[3,4,5,6,7,8,9,10,11,12,1,2];
+			namArr.forEach(function(item,index){
+				var rad=2*Math.PI/12*index;
+				var x=Math.cos(rad)*(r-30);
+				var y=Math.sin(rad)*(r-30);
+				circle.fillText(item,x,y);
+			});
+			for(var i=0;i<60;i++){
+				var rad=2*Math.PI/60 *i;
+				var x=Math.cos(rad)*(r-15);
+				var y=Math.sin(rad)*(r-15);
+				circle.beginPath();
+				circle.arc(x,y,2,2*Math.PI,false);
+				if (i%5 == 0) {
+					circle.fillStyle='#000'
+				}else{
+					circle.fillStyle='#ccc'
+				};
+				circle.fill();
+
+			}
+		}
+		var drawHour=function (hour,min) {
+			circle.save();
+			circle.beginPath();
+			circle.lineWidth=5;
+			circle.lineCap='round';
+			var roH=2*Math.PI/12*hour;
+			var roM=2*Math.PI/12/60*min;
+			circle.rotate(roH+roM);
+			circle.moveTo(0,10);
+			circle.lineTo(0,-r/2+5);
+			circle.stroke();
+			circle.restore();
+		}
+		var drawMin=function (min) {
+			circle.save();
+			circle.beginPath();
+			circle.strokeStyle="#666"
+			circle.lineCap="round";
+			var ro=2*Math.PI/60*min;
+			circle.rotate(ro);
+			circle.lineWidth=3;
+			circle.moveTo(0,10);
+			circle.lineTo(0,-r/2-10);
+			circle.stroke();
+			circle.restore();
+		};
+		var drawSecond=function (second) {
+			circle.save();
+			circle.beginPath();
+			var ro=2*Math.PI/60*second;
+			circle.rotate(ro);
+			circle.fillStyle="red";
+			circle.moveTo(-1,10);
+			circle.lineTo(1,10);
+			circle.lineTo(0,-r+18);
+			circle.fill();
+			circle.restore()
+		} 
+		var drawDot=function () {
+			circle.fillStyle="#fff";
+			circle.beginPath();
+			circle.arc(0,0,3,0,2*Math.PI);
+			circle.fill();
+		};
+		var drawTime=function () {
+			circle.clearRect(0,0,width,height);
+			var t=new Date();
+			var h=t.getHours();
+			var m=t.getMinutes();
+			var s=t.getSeconds();
+			drawBg();
+			drawHour(h,m);
+			drawMin(m);
+			drawSecond(s);
+			drawDot();
+			circle.restore();	
+			$timetext.innerText=t.toLocaleTimeString()
+		};
+
+		setInterval(drawTime,1000);
+
+
+	</script>
+</body>
+</html>
